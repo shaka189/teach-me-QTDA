@@ -1,0 +1,78 @@
+<section class="find-job section">
+  <div class="container">
+    <div class="row">
+      <div class="col-md-12" id="requests-<%= @request.id %>">
+        <div class="job-list">
+          <div class="thumb">
+            <a href="job-details.html"><img src="" alt=""></a>
+          </div>
+          <div class="job-list-content">
+            <h4><%= @request.header %></a><span class="<%= @request.status %>"><%= @request.status %></span></h4>
+            <p><%= @request.content %></p>
+            <div class="job-tag request">
+              <div class="pull-left">
+                <div class="meta-tag">
+                  <span><a href="browse-categories.html"><i class="ti-brush"></i><%= @request.topic %></a></span>
+                  <span><i class="ti-time"></i><%= @request.bill %> $</span>
+                </div>
+              </div>
+              <div class="pull-right">
+                <% unless @request.is_done? %>
+                  <% if user_signed_in? %>
+                    <% if !@request.is_user?(current_user.id) %>
+                      <%= button_to t("views.requests.show.apply"), applies_url(request_id: @request.id),
+                                class: "btn btn-success", remote: true %>
+                    <% end %>
+                  <% else %>
+                    <a href="#loginModal" data-toggle="modal" id="login-button" class="btn btn-success">
+                        <%= t "views.requests.show.apply" %></a>
+                  <% end %>
+                <% end %>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+<div class="container">
+  <div class="col-md-4">
+  <div class="row">
+    <% unless @request.is_done? %>
+    <div class="col-6 col-md-12 col-md-offset-1" >
+      <h5><b><%= t "views.requests.show.appliers" %></b></h5>
+        <div style=" word-wrap: break-word;">
+          <ul id="list-appliers-<%=@request.id %>">
+            <% @appliers.each do |applier| %>
+              <%= render partial: "users/applier", locals: {applier: applier, request_id: @request.id}%>
+            <% end %>
+          </ul>
+        </div>
+    </div>
+    <% end %>
+  </div>
+</div>
+
+<div class="col-md-8">
+  <div class="row col-10 col-md-offset-2">
+    <h5><b><%= t "views.requests.show.comments" %></b></h5>
+  </div>
+  <div class="col-md-12 col-md-offset-2">
+    <p class="hidden" id="request-id"><%= @request.id %></p>
+    <ul id="list-comment">
+      <%= render partial: "requests/comment", collection: @comments %>
+    </ul>
+    <% if user_signed_in? %>
+      <div class="row">
+        <div class="col-md-12 right-chat-textbox form-comment">
+          <textarea class="form-control" id="form-comment" placeholder= "<%= t "views.requests.comment.write" %>"></textarea>
+        </div>
+      </div>
+    <% else %>
+      <p><%= t "views.requests.comment.should1" %> <%= link_to t("views.requests.comment.login"), new_user_session_path %> <%= t "views.requests.comment.should2" %></p>
+    <% end %>
+  </div>
+</div>
+</div>
+<%= render "layouts/form_login" %>
